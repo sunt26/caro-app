@@ -1,0 +1,528 @@
+/* Base styles */
+.caro-game-container {
+  --background: #111827;
+  --background-secondary: #1e293b;
+  --foreground: #f8fafc;
+  --foreground-secondary: #94a3b8;
+  --primary: #10b981;
+  --primary-light: #34d399;
+  --primary-dark: #059669;
+  --primary-foreground: #f8fafc;
+  --secondary: #334155;
+  --secondary-foreground: #f8fafc;
+  --border: #334155;
+  --grid-line: #334155;
+  --cell-hover: rgba(148, 163, 184, 0.1);
+  --piece-x: #10b981;
+  --piece-o: #f59e0b;
+  --piece-x-shadow: rgba(16, 185, 129, 0.4);
+  --piece-o-shadow: rgba(245, 158, 11, 0.4);
+  --winning-highlight: rgba(16, 185, 129, 0.3);
+  --last-move-highlight: rgba(148, 163, 184, 0.2);
+  --header-bg: rgba(17, 24, 39, 0.95);
+  --footer-bg: rgba(17, 24, 39, 0.95);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --radius: 0.5rem;
+
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Game header */
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  z-index: 10;
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  background-color: var(--background-secondary);
+  transition: all 0.3s ease;
+}
+
+.player-info.active {
+  background-color: var(--secondary);
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.player-avatar {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 0.75rem;
+  background-color: var(--secondary);
+}
+
+.player-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.player-country {
+  position: absolute;
+  bottom: -0.25rem;
+  right: -0.25rem;
+  background-color: var(--background-secondary);
+  border-radius: 0.25rem;
+  padding: 0.125rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.625rem;
+}
+
+.player-bot {
+  position: absolute;
+  bottom: -0.25rem;
+  right: -0.25rem;
+  background-color: var(--background-secondary);
+  border-radius: 0.25rem;
+  padding: 0.125rem;
+  display: flex;
+  align-items: center;
+}
+
+.player-name {
+  font-weight: 600;
+  margin-right: 0.75rem;
+}
+
+.player-timer {
+  display: flex;
+  align-items: center;
+  background-color: var(--background);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.player-timer svg {
+  margin-right: 0.25rem;
+}
+
+.score-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  color: white;
+  font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  min-width: 4rem;
+  text-align: center;
+}
+
+/* Game board */
+.game-board-container {
+  display: flex;
+  align-items: center;
+  height: 800px;
+}
+
+.game-board {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  overflow: auto;
+}
+
+.board-row {
+  display: flex;
+}
+
+.board-cell {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--grid-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.board-cell:hover {
+  background-color: var(--cell-hover);
+}
+
+.board-cell.winning {
+  background-color: var(--winning-highlight);
+}
+
+.board-cell.last-move::after {
+  content: "";
+  position: absolute;
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: var(--foreground-secondary);
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.cell-piece {
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.cell-piece.X {
+  background-color: var(--piece-x);
+  box-shadow: 0 0 10px var(--piece-x-shadow);
+}
+
+.cell-piece.O {
+  background-color: var(--piece-o);
+  box-shadow: 0 0 10px var(--piece-o-shadow);
+}
+
+.piece-inner {
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+  background-color: var(--background);
+}
+
+.cell-piece.X .piece-inner {
+  background-color: var(--piece-x);
+}
+
+.cell-piece.O .piece-inner {
+  background-color: var(--piece-o);
+}
+
+/* Game result overlay */
+.game-result {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(17, 24, 39, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.result-content {
+  background-color: var(--background-secondary);
+  padding: 2rem;
+  border-radius: var(--radius);
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  max-width: 90%;
+  width: 24rem;
+}
+
+.result-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--foreground);
+}
+
+/* Game footer */
+.game-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--footer-bg);
+  border-top: 1px solid var(--border);
+  position: relative;
+  z-index: 10;
+}
+
+.cancel-button {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  border: 1px solid var(--border);
+  color: var(--foreground-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-button:hover {
+  background-color: var(--secondary);
+  color: var(--foreground);
+}
+
+.key-hint {
+  display: inline-block;
+  background-color: var(--secondary);
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  margin-left: 0.5rem;
+}
+
+.game-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.control-button {
+  background-color: var(--secondary);
+  border: none;
+  color: var(--foreground-secondary);
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.control-button:hover,
+.control-button.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+.emoji-button {
+  background-color: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emoji-button:hover {
+  transform: scale(1.2);
+}
+
+/* Chat panel */
+.chat-panel {
+  position: absolute;
+  bottom: 5rem;
+  right: 1.5rem;
+  width: 20rem;
+  height: 20rem;
+  background-color: var(--background-secondary);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  z-index: 15;
+  animation: slideUp 0.3s ease-out;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.chat-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.close-button {
+  background: transparent;
+  border: none;
+  color: var(--foreground-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-button:hover {
+  color: var(--foreground);
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 0.75rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.chat-message {
+  padding: 0.5rem 0.75rem;
+  background-color: var(--secondary);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  word-break: break-word;
+}
+
+.message-sender {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.empty-chat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--foreground-secondary);
+  font-size: 0.875rem;
+}
+
+.chat-input {
+  display: flex;
+  padding: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.chat-input input {
+  flex: 1;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 0.375rem 0 0 0.375rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--foreground);
+  font-size: 0.875rem;
+}
+
+.chat-input input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.chat-input button {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 0 0.375rem 0.375rem 0;
+  padding: 0 0.75rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.chat-input button:hover {
+  background-color: var(--primary-light);
+}
+
+/* Buttons */
+.primary-button {
+  background: linear-gradient(to right, var(--primary-dark), var(--primary));
+  color: white;
+  border: none;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primary-button:hover {
+  background: linear-gradient(to right, var(--primary), var(--primary-light));
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .board-cell {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .player-info {
+    padding: 0.375rem 0.75rem;
+  }
+
+  .player-avatar {
+    width: 2rem;
+    height: 2rem;
+    margin-right: 0.5rem;
+  }
+
+  .player-name {
+    font-size: 0.875rem;
+  }
+
+  .chat-panel {
+    width: calc(100% - 2rem);
+    right: 1rem;
+    left: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .game-header,
+  .game-footer {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .board-cell {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .player-timer {
+    font-size: 0.75rem;
+  }
+
+  .key-hint {
+    display: none;
+  }
+}

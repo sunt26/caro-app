@@ -1,0 +1,72 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --border-board-color: #303d4e; /* #b9b9b9; */
+  --board-bg-img: url('../../public/caro_bg.svg');
+}
+
+.board {
+  margin: 0 auto;
+  box-sizing: content-box;
+  border: 1px solid var(--border-board-color);
+  height: 525px;
+  width: 525px;
+  /* background-image: var(--board-bg-img); */
+  background-color: #0e141c;
+}
+
+.board-row {
+  display: flex;
+  border-bottom: 1px solid var(--border-board-color);
+  height: 35px;
+}
+
+.board-row:last-of-type {
+  border-bottom: none;
+}
+
+.square {
+  cursor: pointer;
+  height: 35px;
+  width: 35px;
+  border-right: 1px solid var(--border-board-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.square:last-of-type {
+  border-right: none;
+}
+
+.chess {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(45, 45, 45, 0.5);
+}
+
+.chess-black {
+  background-color: #18BC9C;
+  box-shadow: 0 0 5px rgba(45, 45, 45, 0.5);
+}
+
+.chess-white {
+  background-color: #18BC9C;
+  box-shadow: 0 0 5px rgba(45, 45, 45, 0.5);
+}
+
+.input-container input {
+  width: 80%;
+  height: 60px;
+  padding: 20px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  background-color: #0e141c;
+  color: #fff;
+}
