@@ -5,20 +5,35 @@ import { useGameStore } from './stores/useGameStore'
 import { useShallow } from 'zustand/shallow'
 import { WelcomePage } from './pages/WelcomePage'
 import { RoomPage } from './pages/RoomPage'
+import { useSocketStore } from './stores/useSocketStore'
+import { use, useEffect } from 'react'
 
 function App() {
+  // const { currentUser } = useGameStore(useShallow(state => {
+  //   return {
+  //     currentUser: state.currentUser,
+  //   }
+  // }));
+  // const isInitUser = currentUser.name == "";
+
+  const { disconnectSocket, initSocket, isReady } = useSocketStore();
   const { currentUser } = useGameStore(useShallow(state => {
     return {
       currentUser: state.currentUser,
     }
   }));
-  const isInitUser = currentUser.name == "";
+  useEffect(() => {
+    initSocket();
+    return () => {
+      disconnectSocket();
+    }
+  }, []);
 
   return (
     <BrowserRouter>
       <Routes>
         {
-          isInitUser ?
+          !isReady ?
             <Route path="/" element={<WelcomePage />} />
             :
             <>

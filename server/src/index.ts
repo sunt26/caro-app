@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { registerSocketHandlers } from './socket';
+import { Engine } from './core/engine';
 
 const app = express();
 const httpServer = createServer(app);
@@ -11,13 +12,12 @@ const io = new Server(httpServer, {
   },
 });
 
-const rooms = [];
-const players = [];
+const engine = new Engine();
 
 // Đăng ký các event socket.io
 io.on('connection', (socket) => {
   console.log(`⚡️ New client connected: ${socket.id}`);
-  registerSocketHandlers(io, socket);
+  registerSocketHandlers(engine, io, socket);
 });
 
 const PORT = process.env.PORT || 3000;

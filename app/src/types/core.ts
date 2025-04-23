@@ -32,3 +32,15 @@ export type ChatMessage = {
 };
 
 export type Board = Array<Side | undefined>[];
+
+export type Result = {
+  status: ResultStatus;
+  data: any;
+  message: string;
+  action?: string;
+}
+
+export enum ResultStatus {
+  OK = "OK",
+  ERROR = "ERROR",
+}

@@ -1,11 +1,5 @@
-export const APP = {
-  BOARD: {
-    ROW_SIZE: 15,
-    COL_SIZE: 15,
-  },
-  TIME_LIMIT: 300, // 5m
-}
-
+export const BOARD_SIZE = 15;
+export const WINNING_COUNT = 5;
 export const MESSAGE = {
   PLAYER_NOT_FOUND: "Player not found",
   ROOM_NOT_FOUND: "Room not found",
