@@ -27,4 +27,12 @@ export class Player {
     this.roomId = null;
     return Result.respond_success({ player: this }, MESSAGE.SUCCESS);
   }
+
+  toObject() {
+    return {
+      id: this.id,
+      name: this.name,
+      side: this.side
+    }
+  }
 }

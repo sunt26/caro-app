@@ -28,3 +28,10 @@ export type GamePlayerProps = {
   player1: Player;
   player2: Player;
 }
+
+export type LoadingProps = {
+  isLoading: boolean;
+  cancelHandler?: (props?: any) => any;
+  title?: string;
+  desc?: string;
+}

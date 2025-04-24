@@ -1,19 +1,17 @@
 import { create } from 'zustand';
 import { io, Socket } from 'socket.io-client';
-import { ACTION, EVENT } from '../constants';
-import { Result } from '../types';
-import { produce } from 'immer';
+import { SocketHandler } from '../helpers/socket-handler';
 
 type SocketStore = {
   socket: Socket | null;
-  isReady: boolean;
+  handler: SocketHandler | null;
   initSocket: () => void;
   disconnectSocket: () => void;
 };
 
 export const useSocketStore = create<SocketStore>((set) => ({
   socket: null,
-  isReady: false,
+  handler: null,
 
   initSocket: () => {
     const socketInstance = io("http://192.168.191.128:3000", {
@@ -21,23 +19,13 @@ export const useSocketStore = create<SocketStore>((set) => ({
     });
     socketInstance.connect();
 
-    socketInstance.on(EVENT.RESPONSE, (result: Result) => {
-      const { data, message, status, action } = result;
+    const sockerHandler = new SocketHandler(socketInstance);
+    sockerHandler.init();
 
-      switch (action) {
-        case ACTION.CREATE_PLAYER:
-          alert("Player created");
-          set(produce((state: SocketStore) => {
-            state.isReady = true;
-          }));
-          break;
-
-        default:
-          break;
-      }
+    set({
+      socket: socketInstance,
+      handler: sockerHandler,
     });
-
-    set({ socket: socketInstance });
   },
 
   disconnectSocket: () => {
@@ -47,5 +35,3 @@ export const useSocketStore = create<SocketStore>((set) => ({
     });
   },
 }));
-
-export 

@@ -1,12 +1,14 @@
 import { Board, Player, Position, Side, User } from "./core";
 
 export type GameState = {
-  currentUser: User;
+  currentUser?: User;
   board: Board;
   players: Player[];
   turn?: string;
   roomId?: string;
   winner?: Player;
+  isLoading: boolean;
+  startGame: boolean;
 };
 
 export type GameActions = {
@@ -16,6 +18,9 @@ export type GameActions = {
   setWinner: (winner: Player) => void;
   resetGame: (props?: any) => any;
   setUserName: (name: string) => void;
+  setCurrentUser: (user: Player) => void;
+  setIsLoading: (isLoading: boolean) => void;
+  setStartGame: (startGame: boolean) => void;
 }
 
 export type GameStore = GameState & GameActions;

@@ -4,11 +4,14 @@ import { produce } from 'immer';
 import { initBoard, initCurrentUser, initPlayer } from '../helpers';
 
 export const useGameStore = create<GameStore>((set) => ({
-  currentUser: initCurrentUser(),
+  currentUser: undefined,
   players: [initPlayer(initCurrentUser()), initPlayer(initCurrentUser())],
   board: initBoard(),
   roomId: undefined,
   winner: undefined,
+  isLoading: false,
+  startGame: false,
+
 
   setRoomId: (id) => {
     set(produce((state: GameStore) => {
@@ -18,6 +21,21 @@ export const useGameStore = create<GameStore>((set) => ({
   setPlayers: (players) => {
     set(produce((state: GameStore) => {
       state.players = players;
+    }));
+  },
+  setCurrentUser: (user: Player) => {
+    set(produce((state: GameStore) => {
+      state.currentUser = user;
+    }));
+  },
+  setIsLoading(isLoading) {
+    set(produce((state: GameStore) => {
+      state.isLoading = isLoading;
+    }));
+  },
+  setStartGame(startGame) {
+    set(produce((state: GameStore) => {
+      state.startGame = startGame;
     }));
   },
   makeMove: (position, side) =>
@@ -38,7 +56,9 @@ export const useGameStore = create<GameStore>((set) => ({
   setUserName: (name: string) => {
     set(
       produce((state: GameStore) => {
-        state.currentUser.name = name;
+        if (state.currentUser) {
+          state.currentUser.name = name;
+        }
       })
     );
   },

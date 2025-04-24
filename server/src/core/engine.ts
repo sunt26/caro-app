@@ -1,4 +1,3 @@
-// import { nanoid } from "nanoid";
 import { Player } from "./player";
 import { Room } from "./room";
 import { Result } from "./result";
@@ -32,16 +31,17 @@ export class Engine {
   joinRoom(playerId: string, roomId: string): Result {
     const player = this.getPlayerByID(playerId);
     if (!player) {
+      console.log("player not found")
       return Result.respond_error(null, MESSAGE.PLAYER_NOT_FOUND);
     }
 
     const room = this.getRoomByID(roomId);
     if (!room) {
+      console.log("room not found")
       return Result.respond_error(null, MESSAGE.ROOM_NOT_FOUND);
     }
 
     room.addPlayer(player);
-    player.joinRoom(roomId);
 
     return Result.respond_success({
       room,
@@ -49,10 +49,20 @@ export class Engine {
   }
 
   joinPublicRoom(playerId: string): Result {
+    let room = null;
     if (this.roomQueue.length === 0) {
-      return Result.respond_error(null, MESSAGE.CAN_NOT_JOIN_ROOM);
+      room = this.createRoom(playerId, true).data.room;
+      console.log("init public", room.id)
+    } else {
+      room = this.roomQueue.shift() as Room;
+      console.log("get exists", room.id)
+      this.joinRoom(playerId, room.id);
     }
-    const room = this.roomQueue.shift() as Room;
+    console.log(room)
+    if(room.isFull()) {
+      console.log("start")
+      room.startGame();
+    }
     return this.joinRoom(playerId, room.id);
   }
 
@@ -90,7 +100,10 @@ export class Engine {
   addNewPlayer(playerId: string, name: string, socket: Socket): Result {
     const newPlayer = new Player(playerId, name, socket);
     this.players.push(newPlayer);
-    return Result.respond_success({ player: newPlayer }, MESSAGE.SUCCESS);
+    return Result.respond_success({ player: {
+      id: newPlayer.id,
+      name: newPlayer.name
+    } }, MESSAGE.SUCCESS);
   }
 
   generateID(): string {

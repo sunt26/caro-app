@@ -13,7 +13,7 @@ export const GameUsers = () => {
 
   return (
     players.map((player, index) => (
-      <div key={index} className={`player-info ${player.id === currentUser.id ? "active" : ""}`}>
+      <div key={index} className={`player-info ${player.id === currentUser?.id ? "active" : ""}`}>
         <div className="player-avatar">
           <img src={"https://papergames.io/vi/assets/images/avatars/c2f5609f-b81f-4de4-a544-5eae4d6d9180.svg"} alt={`Player ${index}`} />
           {player.isBot && (

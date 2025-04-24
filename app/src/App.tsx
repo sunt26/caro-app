@@ -1,49 +1,47 @@
-import { GameMenu } from './components/GameMenu'
-import { GameBoard } from './components/GameBoard'
-import { Routes, Route, BrowserRouter } from 'react-router-dom'
-import { useGameStore } from './stores/useGameStore'
-import { useShallow } from 'zustand/shallow'
-import { WelcomePage } from './pages/WelcomePage'
+import { Routes, Route, BrowserRouter, Navigate, useNavigate } from 'react-router-dom'
 import { RoomPage } from './pages/RoomPage'
 import { useSocketStore } from './stores/useSocketStore'
-import { use, useEffect } from 'react'
+import { useEffect } from 'react'
+import { DashBoard } from './pages/DashBoard'
+import { useGameStore } from './stores/useGameStore'
+import { useShallow } from 'zustand/shallow'
+import { GameStore } from './types'
+import { Loading } from './components/Loading'
+import { GamePage } from './pages/GamePage'
 
 function App() {
-  // const { currentUser } = useGameStore(useShallow(state => {
-  //   return {
-  //     currentUser: state.currentUser,
-  //   }
-  // }));
-  // const isInitUser = currentUser.name == "";
+  const { disconnectSocket, initSocket } = useSocketStore();
+  const { currentUser } = useGameStore(useShallow((state: GameStore) => ({
+    currentUser: state.currentUser
+  })));
+  const navigate = useNavigate();
 
-  const { disconnectSocket, initSocket, isReady } = useSocketStore();
-  const { currentUser } = useGameStore(useShallow(state => {
-    return {
-      currentUser: state.currentUser,
-    }
-  }));
   useEffect(() => {
     initSocket();
+
     return () => {
       disconnectSocket();
     }
   }, []);
 
+  useEffect(() => {
+    if (!currentUser) {
+      navigate('/');
+    }
+  }, [currentUser]);
+
+  if (!currentUser) {
+    return (
+      <Loading isLoading={true} />
+    );
+  }
+
   return (
-    <BrowserRouter>
-      <Routes>
-        {
-          !isReady ?
-            <Route path="/" element={<WelcomePage />} />
-            :
-            <>
-              <Route path="/" element={<GameMenu />} />
-              <Route path="/room" element={<RoomPage />} />
-              <Route path="/game/:roomId" element={<GameBoard />} />
-            </>
-        }
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={<DashBoard />} />
+      <Route path="/room" element={<RoomPage />} />
+      <Route path="/game" element={<GamePage />} />
+    </Routes>
   )
 }
 

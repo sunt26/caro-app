@@ -1,4 +1,4 @@
-import { MESSAGE } from "../constants";
+import { ACTION, MESSAGE } from "../constants";
 import { Position } from "../types";
 import { Game } from "./game";
 import { Player } from "./player";
@@ -18,6 +18,16 @@ export class Room {
   startGame(): Result {
     try {
       this.game = new Game(this.players);
+      this.emitEvent(ACTION.GAME_STARTED, {
+        roomId: this.id,
+        players: this.players.map((player)=>({
+          id: player.id,
+          name: player.name,
+          side: player.side,
+          timeLeft: 5000,
+        })),
+        game: this.game
+      });
     } catch (error) {
       return Result.respond_error(null, MESSAGE.MISSING_PLAYER);
     }
@@ -36,6 +46,7 @@ export class Room {
     if (this.players.length > 2 || player.roomId) {
       return Result.respond_error(null, MESSAGE.CAN_NOT_JOIN_ROOM);
     }
+    console.log("addplayer", this.players.map((player) => player.id), player.id)
     player.joinRoom(this.id);
     this.players.push(player);
     return Result.respond_success({ room: this }, MESSAGE.SUCCESS);
