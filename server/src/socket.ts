@@ -2,7 +2,7 @@ import { Server, Socket } from 'socket.io';
 import { Engine } from './core/engine';
 import { ACTION, EVENT, MESSAGE } from './constants';
 import { Payload } from './core/payload';
-import { Result } from './core/result';
+import { Result, SocketResult } from './core/result';
 
 export function registerSocketHandlers(engine: Engine, io: Server, socket: Socket) {
   socket.on('join-room', (roomId: string) => {
@@ -21,37 +21,44 @@ export function registerSocketHandlers(engine: Engine, io: Server, socket: Socke
 
   socket.on(EVENT.REQUEST, (payload: Payload) => {
     const { playerId, action, data } = payload;
-    let result: Result = Result.respond_success(null, MESSAGE.SUCCESS);
-    let actionResponse = action;
+    let result: SocketResult = SocketResult.respond_error(action, null);;
 
-    switch (action) {
-      case ACTION.CREATE_PLAYER:
-        result = engine.addNewPlayer(playerId, data.name, socket);
-        break;
-
-      case ACTION.CREATE_ROOM:
-        result = engine.createRoom(data.playerId, data.isPublic);
-        break;
-
-      case ACTION.FIND_RANDOM_ROOM:
-        result = engine.joinPublicRoom(data.playerId);
-        actionResponse = ACTION.GAME_STARTED;
-        break;
-
-      case ACTION.FIND_ROOM:
-        result = engine.joinRoom(data.playerId, data.roomId);
-        actionResponse = ACTION.GAME_STARTED;
-        break;
-
-      case ACTION.TURN_PLAYED:
-        result = engine.playTurn(data.roomId, data.playerId, data.position);
-        break;
-
-      default:
-        break;
+    try {
+      switch (action) {
+        case ACTION.CREATE_PLAYER:
+          result = engine.addNewPlayer(playerId, data.name, socket);
+          break;
+  
+        case ACTION.CREATE_PRIVATE_ROOM:
+          result = engine.createPrivateRoom(playerId);
+          break;
+  
+        case ACTION.JOIN_PUBLIC_ROOM:
+          result = engine.joinPublicRoom(playerId);
+          break;
+  
+        case ACTION.JOIN_PRIVATE_ROOM:
+          result = engine.joinPrivateRoom(playerId, data.roomId);
+          break;
+  
+        case ACTION.TURN_PLAYED:
+          result = engine.playTurn(data.roomId, playerId, data.position);
+          break;
+  
+        case ACTION.LEAVE_ROOM:
+          result = engine.leaveRoom(playerId, data.roomId);
+          break;
+  
+        default:
+          break;
+      }
+  
+      console.log(`[${result.action}] ${JSON.stringify(result.data)}`);
+    } catch (error: any) {
+      console.log(`[ERROR][${action}] ${error.message}`);
+      result.message = error.message;
     }
 
-    result.action = actionResponse;
     socket.emit(EVENT.RESPONSE, result);
   });
 }
