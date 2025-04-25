@@ -11,6 +11,8 @@ export const GameUsers = () => {
     }
   }));
 
+  console.log("GameUsers:", players);
+
   return (
     players.map((player, index) => (
       <div key={index} className={`player-info ${player.id === currentUser?.id ? "active" : ""}`}>

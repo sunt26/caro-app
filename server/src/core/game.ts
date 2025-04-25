@@ -96,7 +96,7 @@ export class Game {
         }
       }
 
-      if (count >= WINNING_COUNT) {
+      if (count >= 3) {
         return true;
       }
     }

@@ -1,4 +1,4 @@
-import { ACTION, MESSAGE } from "../constants";
+import { ACTION, EVENT, MESSAGE } from "../constants";
 import { Position } from "../types";
 import { Game } from "./game";
 import { Player } from "./player";
@@ -19,6 +19,7 @@ export class Room {
 
   startGame(): Result {
     this.game = new Game(this.players);
+    this.emitEventToPlayer(ACTION.GAME_STARTED, this.game.toObject());
     return Result.respond_success({ room: this.toObject() }, MESSAGE.SUCCESS);
   }
 
@@ -38,7 +39,7 @@ export class Room {
     if (this.players.length > 2 || this.checkPlayerJoined(player.id)) {
       throw new Error(MESSAGE.CAN_NOT_JOIN_ROOM);
     }
-    
+    console.log("add player", player.id);
     this.players.push(player);
 
     if (this.players.length === 2) {
@@ -62,9 +63,11 @@ export class Room {
     return this.players.length === 2;
   }
 
-  emitEvent(event: string, data: any) {
+  emitEventToPlayer(action: string, data: any) {
     this.players.forEach((player) => {
-      player.socket.emit(event, data);
+      player.socket.emit(EVENT.RESPONSE, {
+        action, data
+      });
     });
   }
 

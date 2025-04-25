@@ -17,14 +17,6 @@ export class Player {
   }
 
   toObject() {
-    return ({
-      id: this.id,
-      name: this.name,
-      side: this.side
-    });
-  }
-
-  toObject() {
     return {
       id: this.id,
       name: this.name,

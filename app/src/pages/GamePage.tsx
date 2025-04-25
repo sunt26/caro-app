@@ -7,6 +7,7 @@ import { useShallow } from "zustand/shallow"
 import { GameUsers } from "../components/GameUsers"
 import { useSocketStore } from "../stores/useSocketStore"
 import { Loading } from "../components/Loading"
+import { SocketHandler } from "../helpers/socket-handler"
 
 interface Player {
   id: string
@@ -20,7 +21,7 @@ interface Player {
 
 export function GamePage() {
   const { handler } = useSocketStore(useShallow(state => ({
-    handler: state.handler,
+    handler: state.handler as SocketHandler,
   })));
 
   const { players, roomId, isLoading, startGame } = useGameStore(useShallow(state => ({
@@ -33,10 +34,14 @@ export function GamePage() {
     startGame: state.startGame,
   })));
 
-  console.log(players, roomId, isLoading, startGame);
+  console.log("player game", players, roomId, isLoading, startGame);
 
   const [showChat, setShowChat] = useState(false)
-  const timerRef = useRef<number | null>(null)
+  // const timerRef = useRef<number | null>(null)
+
+  useEffect(()=>{
+    handler.joinPublicRoom();
+  },[handler]);
 
   useEffect(() => {
     // handler?.emit("joinRoom", roomId);
@@ -87,6 +92,10 @@ export function GamePage() {
     return <Loading isLoading title="Finding your opponent..." />
   }
 
+  if(!startGame) {
+    return <Loading isLoading title="Game not start..." />
+  }
+
   return (
     <div className="caro-game-container">
       {/* Header với thông tin người chơi */}
@@ -118,13 +127,6 @@ export function GamePage() {
       <div className="game-footer">
         <button className="cancel-button" onClick={() => { }} title="Hủy bỏ ván chơi">
           <span>Hủy bỏ ván chơi</span>
-        </button>
-        <button
-          className={`control-button ${showChat ? "active" : ""}`}
-          onClick={() => setShowChat(!showChat)}
-          title="Chat"
-        >
-          <MessageCircle size={20} />
         </button>
       </div>
     </div>

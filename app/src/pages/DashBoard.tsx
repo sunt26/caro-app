@@ -40,7 +40,6 @@ export function DashBoard() {
       text: "Chơi trực tuyến",
       number: 3,
       handler: () => {
-        handler?.findPublicRoom();
         navigate("/game");
       },
       subtext: "với một người chơi ngẫu nhiên",

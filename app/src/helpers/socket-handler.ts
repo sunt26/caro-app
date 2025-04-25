@@ -25,6 +25,7 @@ export class SocketHandler {
           break;
 
         case ACTION.GAME_STARTED:
+          console.log(ACTION.GAME_STARTED, data.players)
           useGameStore.setState(produce((state: GameStore) => {
             state.startGame = true;
             state.isLoading = false;
@@ -34,6 +35,18 @@ export class SocketHandler {
           break;
 
         case ACTION.GAME_OVER:
+          break;
+
+        case ACTION.JOIN_PUBLIC_ROOM:
+          console.log(ACTION.JOIN_PUBLIC_ROOM, data.players)
+          // if(data.players.length === 2) {
+          //   useGameStore.setState(produce((state: GameStore) => {
+          //     state.startGame = true;
+          //     state.isLoading = false;
+          //     state.players = data.players;
+          //     state.roomId = data.roomId;
+          //   }));
+          // }
           break;
 
         default:
@@ -46,26 +59,27 @@ export class SocketHandler {
 
   createPlayer() {
     const id = generateID();
-    this.emitAction(ACTION.CREATE_PLAYER, { id, name: id });
+    this.emitAction(ACTION.CREATE_PLAYER, { name: id }, id);
   }
 
-  createRoom() {
-    this.emitAction(ACTION.CREATE_ROOM, { isPublic: false });
+  createPrivateRoom() {
+    this.emitAction(ACTION.CREATE_PRIVATE_ROOM, { isPublic: false });
   }
 
-  findRoom(roomId: string) {
-    this.emitAction(ACTION.FIND_ROOM, { roomId });
+  joinPrivateRoom(roomId: string) {
+    this.emitAction(ACTION.JOIN_PRIVATE_ROOM, { roomId });
   }
 
-  findPublicRoom() {
-    this.emitAction(ACTION.FIND_RANDOM_ROOM, {});
+  joinPublicRoom() {
+    this.emitAction(ACTION.JOIN_PUBLIC_ROOM, {});
     useGameStore.getState().setIsLoading(true);
   }
 
-  emitAction(action: string, data: any) {
+  emitAction(action: string, data: any, customPlayerId?: string) {
     console.log("emit", action, data);
+    const playerId = customPlayerId || useGameStore.getState().currentUser?.id || generateID();
     this.socket.emit(EVENT.REQUEST, {
-      playerId: useGameStore.getState().currentUser?.id,
+      playerId: playerId,
       action,
       data
     });

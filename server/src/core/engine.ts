@@ -49,11 +49,14 @@ export class Engine {
     }
       
     const room = this.publicRoomQueue.shift() as Room;
+    console.log("joinRoom", room.players.length);
+
     try {
       this.joinRoom(playerId, room.id);
     } catch (error) {
       this.publicRoomQueue.unshift(room);
     }
+    console.log(" afterjoinRoom", room.players.length);
     return SocketResult.respond_success(ACTION.JOIN_PUBLIC_ROOM, room.toObject());
   }
 
