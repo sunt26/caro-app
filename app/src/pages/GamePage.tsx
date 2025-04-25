@@ -9,16 +9,6 @@ import { useSocketStore } from "../stores/useSocketStore"
 import { Loading } from "../components/Loading"
 import { SocketHandler } from "../helpers/socket-handler"
 
-interface Player {
-  id: string
-  name: string
-  avatar: string
-  score: number
-  isBot?: boolean
-  country?: string
-}
-
-
 export function GamePage() {
   const { handler } = useSocketStore(useShallow(state => ({
     handler: state.handler as SocketHandler,
@@ -36,7 +26,6 @@ export function GamePage() {
 
   console.log("player game", players, roomId, isLoading, startGame);
 
-  const [showChat, setShowChat] = useState(false)
   // const timerRef = useRef<number | null>(null)
 
   useEffect(()=>{

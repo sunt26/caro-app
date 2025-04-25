@@ -1,5 +1,5 @@
 import { Socket } from "socket.io-client";
-import { GameStore, Result } from "../types";
+import { GameStore, Player, Result } from "../types";
 import { ACTION, EVENT } from "../constants";
 import { useGameStore } from "../stores/useGameStore";
 import { generateID } from ".";
@@ -29,7 +29,12 @@ export class SocketHandler {
           useGameStore.setState(produce((state: GameStore) => {
             state.startGame = true;
             state.isLoading = false;
-            state.players = data.players;
+            state.players = data.players.map((player: any): Player => ({
+              id: player.id,
+              name: player.name,
+              side: player.side,
+              timeLeft: 300000,
+            }));
             state.roomId = data.roomId;
           }));
           break;

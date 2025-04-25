@@ -2,16 +2,32 @@ import { useShallow } from "zustand/shallow";
 import { useGameStore } from "../stores/useGameStore";
 import { Clock, BotIcon as Robot } from "lucide-react";
 import { formatTime } from "../helpers";
+import { useEffect } from "react";
+import { GameStore } from "../types";
+import { produce } from "immer";
 
 export const GameUsers = () => {
-  const { currentUser, players } = useGameStore(useShallow(state => {
+  const { currentUser, players, turnId } = useGameStore(useShallow(state => {
     return {
       currentUser: state.currentUser,
       players: state.players,
+      turnId: state.
     }
   }));
 
-  console.log("GameUsers:", players);
+  const turnPlayer = players.find(player => player.id === turnId);
+
+  useEffect(()=>{
+    const interval = setInterval(() => {
+      turnPlayer?.timeLeft -= 1000;
+      useGameStore.setState(produce((state: GameStore) => {
+        state.players.forEach(player => {
+          
+        })
+      }))
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [turnId]);
 
   return (
     players.map((player, index) => (

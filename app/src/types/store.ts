@@ -4,7 +4,7 @@ export type GameState = {
   currentUser?: User;
   board: Board;
   players: Player[];
-  turn?: string;
+  turnId: string;
   roomId?: string;
   winner?: Player;
   isLoading: boolean;
@@ -18,7 +18,7 @@ export type GameActions = {
   setWinner: (winner: Player) => void;
   resetGame: (props?: any) => any;
   setUserName: (name: string) => void;
-  setCurrentUser: (user: Player) => void;
+  setCurrentUser: (user: User) => void;
   setIsLoading: (isLoading: boolean) => void;
   setStartGame: (startGame: boolean) => void;
 }

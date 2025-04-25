@@ -15,9 +15,9 @@ export interface User {
 }
 
 export interface Player extends User {
-  side?: Side;
+  side: Side;
+  timeLeft: number;
   isBot?: boolean;
-  timeLeft?: number;
 };
 
 export type Position = {
