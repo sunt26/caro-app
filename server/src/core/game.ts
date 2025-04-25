@@ -25,26 +25,41 @@ export class Game {
 
   playTurn(playerId: string, position: Position): Result {
     if(this.winner){
-      return Result.respond_error(null, MESSAGE.GAME_OVER);
+      throw new Error(MESSAGE.GAME_OVER);
     }
 
     const player = this.getCurrentPlayer(playerId);
     const opponent = this.getOpponent(playerId);
 
     if (!player || !opponent) {
-      return Result.respond_error(null, MESSAGE.MISSING_PLAYER);
+      throw new Error(MESSAGE.MISSING_PLAYER);
     }
 
-    if (this.isValidPosition(position) && this.isEmptyPosition(position)) {
-      this.board[position.row][position.col] = player.id;
-      this.turn = this.turn === player.id ? opponent.id : player.id;
+    if (player.id !== this.turn) {
+      throw new Error(MESSAGE.NOT_YOUR_TURN);
     }
+
+    if (!this.isValidPosition(position)) {
+      throw new Error("Invalid position");
+    }
+
+    if (!this.isEmptyPosition(position)) {
+      throw new Error("Position is not empty");
+    }
+
+    this.board[position.row][position.col] = player.side as string;
+    this.turn = this.turn === player.id ? opponent.id : player.id;
 
     if (this.checkWinner({ position, playerID: player.id })) {
       this.winner = player;
     }
 
-    return Result.respond_success({ game: this }, MESSAGE.SUCCESS);
+    return Result.respond_success({ game: this.toObject() }, MESSAGE.SUCCESS);
+  }
+
+  playerLeave(playerId: string): Result {
+    this.winner = this.players.filter((player) => player.id !== playerId)[0];
+    return Result.respond_success({ game: this.toObject() }, MESSAGE.SUCCESS);
   }
 
   checkWinner(props: { position: Position; playerID: string }): boolean {
@@ -108,5 +123,14 @@ export class Game {
 
   getOpponent(currentId: string): Player | undefined {
     return this.players.find((p) => p.id !== currentId);
+  }
+
+  toObject() {
+    return {
+      winner: this.winner?.toObject(),
+      turn: this.turn,
+      players: this.players.map((player) => player.toObject()),
+      board: this.board,
+    }
   }
 }
