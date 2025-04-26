@@ -1,45 +1,44 @@
-"use client"
-
-import { ArrowLeft, Users, Bot, Trophy, Globe, Loader2 } from "lucide-react"
-import "../styles/game-menu.css"
-import { GameStore, MenuItemProps } from "../types"
+import { Users, Globe } from "lucide-react"
+import { MenuItemProps } from "../types"
 import { useNavigate } from "react-router-dom"
 import { MenuItem } from "../components/MenuItem"
 import { useSocketStore } from "../stores/useSocketStore"
 import { useShallow } from "zustand/shallow"
-import { useGameStore } from "../stores/useGameStore"
-import { Loading } from "../components/Loading"
-import { useEffect } from "react"
+import "../styles/game-menu.css"
+import { useState } from "react"
 
 export function DashBoard() {
   const navigate = useNavigate();
   const { handler } = useSocketStore(useShallow((state) => ({
     handler: state.handler
   })));
-
-  // const { isLoading, startGame } = useGameStore(useShallow((state) => ({
-  //   isLoading: state.isLoading,
-  //   startGame: state.startGame,
-  // })));
+  const [showRoomPopup, setShowRoomPopup] = useState(false);
+  const [privateRoomId, setPrivateRoomId] = useState("");
 
   const menuItems: MenuItemProps[] = [
     {
       icon: <Users className="menu-icon" />,
       text: "Tạo phòng chơi",
       number: 1,
-      handler: () => { navigate("/new-room") },
+      handler: () => { 
+        handler?.createPrivateRoom();
+        navigate("/game");
+       },
     },
     {
       icon: <Users className="menu-icon" />,
       text: "Vào phòng chơi",
       number: 2,
-      handler: () => { navigate("/room") },
+      handler: () => {
+        setShowRoomPopup(true);
+      },
     },
     {
       icon: <Globe className="menu-icon" />,
       text: "Chơi trực tuyến",
       number: 3,
       handler: () => {
+        handler?.joinPublicRoom();
         navigate("/game");
       },
       subtext: "với một người chơi ngẫu nhiên",
@@ -47,17 +46,8 @@ export function DashBoard() {
     }
   ];
 
-  // useEffect(() => {
-  //   navigate("/");
-  // }, [startGame]);
-
-  // if (isLoading) {
-  //   return <Loading isLoading title="Finding your opponent..." />
-  // }
-
   return (
     <div className="caro-game-container">
-      {/* Background elements */}
       <div className="background-elements">
         <div className="bg-circle circle-1"></div>
         <div className="bg-circle circle-2"></div>
@@ -66,7 +56,6 @@ export function DashBoard() {
       </div>
 
       <div className="content-wrapper">
-        {/* Header with logo and title */}
         <div className="header">
           <div className="logo-container">
             <div className="logo-glow"></div>
@@ -80,14 +69,42 @@ export function DashBoard() {
           </div>
         </div>
 
-        {/* Main menu options */}
         <div className="menu-options">
           {menuItems.map((item, index) => (
             <MenuItem key={index} {...item} />
           ))}
         </div>
 
-        {/* Footer */}
+        {
+          showRoomPopup && (
+            <div className="game-result">
+              <div className="result-content">
+                <h2>Enter Room ID</h2>
+                <input
+                  style={{ display: "block", width: "260px", margin: "0 auto", height: "45px", padding: "10px", borderRadius: "10px" }}
+                  placeholder="Room ID"
+                  onChange={(e) => {
+                    setPrivateRoomId(e.target.value.toUpperCase());
+                  }}
+                  value={privateRoomId}
+                />
+                <button className="primary-button" style={{ display: "block", width: "140px", margin: "10px auto" }} onClick={() => {
+                  setShowRoomPopup(false);
+                  handler?.joinPrivateRoom(privateRoomId);
+                  navigate("/game");
+                }}>
+                  Enter Room
+                </button>
+                <button className="cancel-button" style={{ display: "block", width: "140px", margin: "auto" }} onClick={() => {
+                  setShowRoomPopup(false);
+                }}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )
+        }
+
         <div className="footer">
           <p>© 2025 Caro Game</p>
         </div>
@@ -96,7 +113,6 @@ export function DashBoard() {
   )
 }
 
-// Caro Logo component embedded within the same file
 function CaroLogo() {
   return (
     <svg width="100%" height="100%" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">

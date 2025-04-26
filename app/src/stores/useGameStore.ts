@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { GameStore, Player, Side, User } from '../types/index';
 import { produce } from 'immer';
-import { initBoard, initCurrentUser, initPlayer } from '../helpers';
+import { initBoard } from '../helpers';
 
 export const useGameStore = create<GameStore>((set) => ({
   currentUser: undefined,
@@ -11,11 +11,18 @@ export const useGameStore = create<GameStore>((set) => ({
   winner: undefined,
   isLoading: false,
   startGame: false,
+  roomNotFound: false,
   turnId: '',
 
   setRoomId: (id) => {
     set(produce((state: GameStore) => {
       state.roomId = id;
+    }));
+  },
+  setRoom: (roomId, players) => {
+    set(produce((state: GameStore) => {
+      state.roomId = roomId;
+      state.players = players;
     }));
   },
   setPlayers: (players) => {

@@ -8,86 +8,50 @@ import { GameUsers } from "../components/GameUsers"
 import { useSocketStore } from "../stores/useSocketStore"
 import { Loading } from "../components/Loading"
 import { SocketHandler } from "../helpers/socket-handler"
+import { useNavigate } from "react-router-dom"
 
 export function GamePage() {
+  const navigate = useNavigate();
   const { handler } = useSocketStore(useShallow(state => ({
     handler: state.handler as SocketHandler,
   })));
 
-  const { players, roomId, isLoading, startGame } = useGameStore(useShallow(state => ({
-    currentUser: state.currentUser,
-    players: state.players,
-    board: state.board,
-    roomId: state.roomId,
+  const { isLoading, startGame, winner, currentUser, roomNotFound, roomId } = useGameStore(useShallow(state => ({
     winner: state.winner,
     isLoading: state.isLoading,
     startGame: state.startGame,
+    currentUser: state.currentUser,
+    roomNotFound: state.roomNotFound,
+    roomId: state.roomId,
   })));
 
-  console.log("player game", players, roomId, isLoading, startGame);
-
-  // const timerRef = useRef<number | null>(null)
-
-  useEffect(()=>{
-    handler.joinPublicRoom();
-  },[handler]);
+  useEffect(() => {
+    if (roomNotFound) {
+      alert("Room not found");
+      navigate("/");
+    }
+  }, [roomNotFound]);
 
   useEffect(() => {
-    // handler?.emit("joinRoom", roomId);
-    // return () => {
-    //   handler?.emit("leaveRoom", roomId);
-    // }
-  }, [roomId]);
-
-  // useEffect(() => {
-  //   if (gameState.status === "playing") {
-  //     timerRef.current = setInterval(() => {
-  //       setTimeLeft((prev) => ({
-  //         ...prev,
-  //         [gameState.currentPlayer]: Math.max(0, prev[gameState.currentPlayer] - 1),
-  //       }))
-  //     }, 1000)
-  //   }
-
-  //   return () => {
-  //     if (timerRef.current) {
-  //       clearInterval(timerRef.current)
-  //     }
-  //   }
-  // }, [gameState.currentPlayer, gameState.status])
-
-  // // Kiểm tra hết thời gian
-  // useEffect(() => {
-  //   if (timeLeft[gameState.currentPlayer] === 0 && gameState.status === "playing") {
-  //     handleTimeout()
-  //   }
-  // }, [timeLeft, gameState.currentPlayer, gameState.status])
-
-  // // Xử lý hết thời gian
-  // const handleTimeout = () => {
-  //   const winner = gameState.currentPlayer === "X" ? "O" : "X"
-  //   setGameState((prev) => ({
-  //     ...prev,
-  //     status: "finished",
-  //     winner,
-  //   }))
-  // }
+    window.onbeforeunload = () => {
+      handler?.leaveRoom();
+    }
+  }, [handler]);
 
   if (!handler) {
     return <div className="error-message">Something error</div>
   }
 
-  if(isLoading) {
+  if (isLoading) {
     return <Loading isLoading title="Finding your opponent..." />
   }
 
-  if(!startGame) {
-    return <Loading isLoading title="Game not start..." />
+  if (!startGame) {
+    return <Loading isLoading title={`ROOM ID: ${roomId?.split("-")[1]} - Game not start...`} />
   }
 
   return (
     <div className="caro-game-container">
-      {/* Header với thông tin người chơi */}
       <div className="game-header">
         <GameUsers />
       </div>
@@ -96,26 +60,25 @@ export function GamePage() {
         <Board />
       </div>
 
-      {/* Thông báo kết quả
-      {(gameState.status === "finished" || gameState.status === "draw") && (
+      {winner && (
         <div className="game-result">
           <div className="result-content">
-            {gameState.status === "draw" ? (
-              <h2>Hòa!</h2>
-            ) : (
-              <h2>{gameState.winner === "X" ? players.X.name : players.O.name} thắng!</h2>
-            )}
-            <button className="primary-button" onClick={startNewGame}>
-              Chơi lại
+            <h2>{winner.id === currentUser?.id ? "You win" : "You lose"}</h2>
+            <button className="primary-button" onClick={() => {
+              window.location.reload();
+            }}>
+              Quit
             </button>
           </div>
         </div>
-      )} */}
+      )}
 
-      {/* Footer với các nút điều khiển */}
       <div className="game-footer">
-        <button className="cancel-button" onClick={() => { }} title="Hủy bỏ ván chơi">
-          <span>Hủy bỏ ván chơi</span>
+        <button className="cancel-button" onClick={() => {
+          handler?.leaveRoom();
+          window.location.reload();
+        }} title="Hủy bỏ ván chơi">
+          <span>Cancel</span>
         </button>
       </div>
     </div>

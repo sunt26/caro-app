@@ -16,14 +16,14 @@ export const initCurrentUser = (): User => {
   }
 }
 
-export const initPlayer = (user: User): Player => {
-  return {
-    ...user,
-    side: undefined,
-    isBot: false,
-    timeLeft: APP.TIME_LIMIT, // 5 minutes
-  }
-}
+// export const initPlayer = (user: User): Player => {
+//   return {
+//     ...user,
+//     side: undefined,
+//     isBot: false,
+//     timeLeft: APP.TIME_LIMIT, // 5 minutes
+//   }
+// }
 
 export const initBoard = (): Board => {
   return Array(APP.BOARD.ROW_SIZE)

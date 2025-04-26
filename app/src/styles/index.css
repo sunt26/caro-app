@@ -39,6 +39,10 @@
   align-items: center;
 }
 
+.hover-square:hover {
+  background-color: #1e293b;
+}
+
 .square:last-of-type {
   border-right: none;
 }
@@ -51,12 +55,12 @@
 }
 
 .chess-black {
-  background-color: #18BC9C;
+  background-color: #3a9d77;
   box-shadow: 0 0 5px rgba(45, 45, 45, 0.5);
 }
 
 .chess-white {
-  background-color: #18BC9C;
+  background-color: #45562e;
   box-shadow: 0 0 5px rgba(45, 45, 45, 0.5);
 }
 

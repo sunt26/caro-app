@@ -4,34 +4,33 @@ import { Clock, BotIcon as Robot } from "lucide-react";
 import { formatTime } from "../helpers";
 import { useEffect } from "react";
 import { GameStore } from "../types";
-import { produce } from "immer";
+import { current, produce } from "immer";
 
 export const GameUsers = () => {
-  const { currentUser, players, turnId } = useGameStore(useShallow(state => {
+  const { players, turnId, currentUser } = useGameStore(useShallow(state => {
     return {
-      currentUser: state.currentUser,
       players: state.players,
-      turnId: state.
+      turnId: state.turnId,
+      currentUser: state.currentUser,
     }
   }));
 
-  const turnPlayer = players.find(player => player.id === turnId);
-
-  useEffect(()=>{
+  useEffect(() => {
     const interval = setInterval(() => {
-      turnPlayer?.timeLeft -= 1000;
       useGameStore.setState(produce((state: GameStore) => {
-        state.players.forEach(player => {
-          
-        })
-      }))
+        const turnPlayer = state.players.find(player => player.id == turnId);
+        if (turnPlayer) {
+          turnPlayer.timeLeft -= 1;
+        }
+        return state;
+      }));
     }, 1000);
     return () => clearInterval(interval);
   }, [turnId]);
 
   return (
     players.map((player, index) => (
-      <div key={index} className={`player-info ${player.id === currentUser?.id ? "active" : ""}`}>
+      <div key={index} className={`player-info ${player.id === turnId ? "active" : ""}`}>
         <div className="player-avatar">
           <img src={"https://papergames.io/vi/assets/images/avatars/c2f5609f-b81f-4de4-a544-5eae4d6d9180.svg"} alt={`Player ${index}`} />
           {player.isBot && (
@@ -40,7 +39,7 @@ export const GameUsers = () => {
             </div>
           )}
         </div>
-        <div className="player-name">{player.name}</div>
+        <div className="player-name">{player.name + (player.id === currentUser?.id ? " (You)" : "")}</div>
         <div className="player-timer">
           <Clock size={16} />
           <span>{formatTime(player.timeLeft || 0)}</span>

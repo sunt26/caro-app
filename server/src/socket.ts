@@ -12,6 +12,7 @@ export function registerSocketHandlers(engine: Engine, io: Server, socket: Socke
   socket.on(EVENT.REQUEST, (payload: Payload) => {
     const { playerId, action, data } = payload;
     let result: SocketResult = SocketResult.respond_error(action, null);;
+    let skipResponse = false;
 
     try {
       switch (action) {
@@ -33,10 +34,12 @@ export function registerSocketHandlers(engine: Engine, io: Server, socket: Socke
   
         case ACTION.TURN_PLAYED:
           result = engine.playTurn(data.roomId, playerId, data.position);
+          skipResponse = true;
           break;
   
         case ACTION.LEAVE_ROOM:
           result = engine.leaveRoom(playerId, data.roomId);
+          skipResponse = true;
           break;
   
         default:
@@ -49,6 +52,8 @@ export function registerSocketHandlers(engine: Engine, io: Server, socket: Socke
       result.message = error.message;
     }
 
-    socket.emit(EVENT.RESPONSE, result);
+    if(!skipResponse){
+      socket.emit(EVENT.RESPONSE, result);
+    }
   });
 }

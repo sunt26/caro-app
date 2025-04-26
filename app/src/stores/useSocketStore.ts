@@ -14,7 +14,7 @@ export const useSocketStore = create<SocketStore>((set) => ({
   handler: null,
 
   initSocket: () => {
-    const socketInstance = io("http://localhost:3000", {
+    const socketInstance = io("http://192.168.191.128:3000", {
       autoConnect: false,
     });
     socketInstance.connect();

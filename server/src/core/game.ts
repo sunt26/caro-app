@@ -1,4 +1,4 @@
-import { BOARD_SIZE, MESSAGE, WINNING_COUNT } from "../constants";
+import { ACTION, BOARD_SIZE, EVENT, MESSAGE, WINNING_COUNT } from "../constants";
 import { Position, Side } from "../types";
 import { Player } from "./player";
 import { Result } from "./result";
@@ -54,11 +54,24 @@ export class Game {
       this.winner = player;
     }
 
+    this.players.forEach((player) => {
+      player.socket.emit(EVENT.RESPONSE, {
+        action: ACTION.TURN_PLAYED,
+        data: { game: this.toObject() }
+      })
+    })
+
     return Result.respond_success({ game: this.toObject() }, MESSAGE.SUCCESS);
   }
 
   playerLeave(playerId: string): Result {
     this.winner = this.players.filter((player) => player.id !== playerId)[0];
+    this.players.forEach((player) => {
+      player.socket.emit(EVENT.RESPONSE, {
+        action: ACTION.TURN_PLAYED,
+        data: { game: this.toObject() }
+      })
+    });
     return Result.respond_success({ game: this.toObject() }, MESSAGE.SUCCESS);
   }
 

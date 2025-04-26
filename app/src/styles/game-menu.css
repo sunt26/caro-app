@@ -83,7 +83,7 @@
   width: 100%;
   max-width: 28rem;
   z-index: 10;
-  position: relative;
+  /* position: relative; */
 }
 
 /* Header */
@@ -432,7 +432,7 @@
 
 .cancel-button {
   position: relative;
-  background: linear-gradient(to right, #dc2626, #ef4444);
+  background: linear-gradient(to right, #ae2525, #cb6363);
   color: white;
   border: none;
   padding: 0.625rem 1.25rem;

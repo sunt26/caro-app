@@ -9,6 +9,7 @@ export type GameState = {
   winner?: Player;
   isLoading: boolean;
   startGame: boolean;
+  roomNotFound: boolean;
 };
 
 export type GameActions = {
@@ -21,6 +22,7 @@ export type GameActions = {
   setCurrentUser: (user: User) => void;
   setIsLoading: (isLoading: boolean) => void;
   setStartGame: (startGame: boolean) => void;
+  setRoom: (roomId: string, players: Player[]) => void;
 }
 
 export type GameStore = GameState & GameActions;
